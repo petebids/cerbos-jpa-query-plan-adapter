@@ -1,0 +1,185 @@
+# yaml-language-server: $schema=https://api.cerbos.dev/latest/cerbos/policy/v1/Policy.schema.json
+
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
+  resource: resource
+  rules:
+    - actions:
+        - "always-allow"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+
+    - actions:
+        - "always-deny"
+      effect: EFFECT_DENY
+      roles:
+        - USER
+
+    - actions:
+        - "equal"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aBool == true
+
+    - actions:
+        - "explicit-deny"
+      effect: EFFECT_DENY
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aBool == true
+
+    - actions:
+        - "ne"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aString != "string"
+
+    - actions:
+        - "and"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          all:
+            of:
+              - expr: request.resource.attr.aBool == true
+              - expr: request.resource.attr.aString != "string"
+
+    - actions:
+        - "or"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          any:
+            of:
+              - expr: request.resource.attr.aBool == true
+              - expr: request.resource.attr.aString != "string"
+
+    - actions:
+        - "nand"
+      effect: EFFECT_DENY
+      roles:
+        - USER
+      condition:
+        match:
+          all:
+            of:
+              - expr: request.resource.attr.aBool == true
+              - expr: request.resource.attr.aString != "string"
+
+    - actions:
+        - "nor"
+      effect: EFFECT_DENY
+      roles:
+        - USER
+      condition:
+        match:
+          any:
+            of:
+              - expr: request.resource.attr.aBool == true
+              - expr: request.resource.attr.aString != "string"
+
+    - actions:
+        - "in"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aString in ["string", "anotherString"]
+
+    - actions:
+        - "gt"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aNumber > 1
+
+    - actions:
+        - "lt"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aNumber < 2
+
+    - actions:
+        - "gte"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aNumber >= 1
+
+    - actions:
+        - "lte"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.aNumber <= 2
+
+    - actions:
+        - "relation-some"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: P.id in request.resource.attr.ownedBy
+
+    - actions:
+        - "relation-none"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: >
+            !(P.id in request.resource.attr.ownedBy)
+
+    - actions:
+        - "relation-is"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.createdBy == P.id
+
+    - actions:
+        - "relation-is-not"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: >
+            !(request.resource.attr.createdBy == P.id)
+
+    - actions:
+        - "equal-nested"
+      effect: EFFECT_ALLOW
+      roles:
+        - USER
+      condition:
+        match:
+          expr: request.resource.attr.nested.aBool == true
