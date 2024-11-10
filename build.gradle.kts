@@ -1,4 +1,4 @@
-import com.diffplug.gradle.spotless.SpotlessApply
+
 
 plugins {
     `java-library`
@@ -6,7 +6,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     id("com.diffplug.spotless") version "6.11.0"
 }
-group = "io.petebids"
+group = "com.github.petebids"
 version = "0.0.1"
 
 java {
@@ -42,6 +42,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.3.0")
     testImplementation("org.springframework.boot:spring-boot-testcontainers:3.3.0")
     testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("com.github.gavlyukovskiy:datasource-proxy-spring-boot-starter:1.10.0")
 
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
@@ -70,6 +71,17 @@ publishing {
             version = version
         }
 
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/petebids/queryplanadapter")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-package com.example.queryplanadapter;
+package com.github.petebids;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

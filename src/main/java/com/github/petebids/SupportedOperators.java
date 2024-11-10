@@ -1,4 +1,4 @@
-package com.example.queryplanadapter;
+package com.github.petebids;
 
 import lombok.Getter;
 

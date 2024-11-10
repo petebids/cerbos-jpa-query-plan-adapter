@@ -1,4 +1,4 @@
-package com.example.queryplanadapter;
+package com.github.petebids;
 
 
 import dev.cerbos.api.v1.engine.Engine.PlanResourcesFilter.Expression.Operand;

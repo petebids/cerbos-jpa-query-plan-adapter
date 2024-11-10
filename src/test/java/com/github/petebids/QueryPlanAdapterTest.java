@@ -1,12 +1,10 @@
-package com.example.queryplanadapter;
+package com.github.petebids;
 
 
 import dev.cerbos.sdk.CerbosBlockingClient;
 import dev.cerbos.sdk.CerbosClientBuilder;
 import dev.cerbos.sdk.PlanResourcesResult;
 import dev.cerbos.sdk.builders.Principal;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -189,9 +186,7 @@ public class QueryPlanAdapterTest {
             throw new RuntimeException();
         }
 
-        final Specification<Resource> specification = adapter.adapt(plan.getCondition().get());
-
-        final List<Resource> resources = resourceRepository.findAll(specification);
+        final List<Resource> resources = resourceRepository.findAll(adapter.adapt(plan.getCondition().get()));
 
         assertEquals(testCase.expectedResultCount(), resources.size());
         assertTrue(testCase.validator().apply(resources));
