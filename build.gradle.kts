@@ -76,7 +76,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/petebids/queryplanadapter")
+            url = uri("https://maven.pkg.github.com/petebids/cerbos-jpa-query-plan-adapter")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
