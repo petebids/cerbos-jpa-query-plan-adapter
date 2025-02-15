@@ -1,10 +1,11 @@
 package com.github.petebids;
 
-import lombok.Getter;
 
-@Getter
+
+
 enum SupportedOperators {
     AND("AND"),
+    IN("IN"),
     OR("OR"),
     NOT("NOT"),
     EQ("EQ"),
@@ -14,6 +15,10 @@ enum SupportedOperators {
     GT("GT"),
     GTE("GTE")
     ;
+
+    public String getValue() {
+        return value;
+    }
 
     private final String value;
     SupportedOperators(String value) {

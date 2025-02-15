@@ -1,6 +1,7 @@
 package com.github.petebids;
 
 
+import com.google.protobuf.Value;
 import dev.cerbos.api.v1.engine.Engine.PlanResourcesFilter.Expression.Operand;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
@@ -9,6 +10,7 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,6 +29,10 @@ public class QueryPlanAdapter<T> {
 
     public QueryPlanAdapter(Map<String, AttributeTarget> propertyMappings) {
         this.propertyMappings = propertyMappings;
+    }
+
+    public QueryPlanAdapter() {
+        this(Collections.emptyMap());
     }
 
     public Specification<T> adapt(Operand operand) {
@@ -57,6 +63,11 @@ public class QueryPlanAdapter<T> {
                         toExpression(pair.left(), pair.right(), root, criteriaBuilder),
                         toExpression(pair.right(), pair.left(), root, criteriaBuilder)
                 );
+            };
+            case IN -> (root, query, criteriaBuilder) -> {
+                final OperandPair pair = parseInfixOrFail(operand);
+                return getObjectPath(pair.left(), root).in
+                        (pair.right().getValue().getListValue().getValuesList().stream().map(Value::getStringValue).toList());
             };
             case NE -> (root, query, criteriaBuilder) -> {
                 final OperandPair pair = parseInfixOrFail(operand);

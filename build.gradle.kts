@@ -44,8 +44,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.github.gavlyukovskiy:datasource-proxy-spring-boot-starter:1.10.0")
 
-    compileOnly("org.projectlombok:lombok:1.18.34")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
 
     testCompileOnly("org.projectlombok:lombok:1.18.34")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
@@ -55,6 +53,9 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+//tasks.withType<JavaCompile>{
+//    dependsOn(tasks.withType<SpotlessApply>())
+//}
 
 spotless{
     java{
@@ -67,7 +68,7 @@ publishing {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
             group = groupId
-            artifactId = "queryplanadapter"
+            artifactId = "cerbos-jpa-query-plan-adapter"
             version = version
         }
 

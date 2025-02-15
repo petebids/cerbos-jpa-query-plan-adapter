@@ -5,10 +5,9 @@ import dev.cerbos.sdk.CerbosBlockingClient;
 import dev.cerbos.sdk.CerbosClientBuilder;
 import dev.cerbos.sdk.PlanResourcesResult;
 import dev.cerbos.sdk.builders.Principal;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +25,12 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+@Slf4j
 @Testcontainers
 @SpringBootTest
 public class QueryPlanAdapterTest {
@@ -47,6 +45,7 @@ public class QueryPlanAdapterTest {
             .withPassword("postgres")
             .withUsername("postgres")
             .withExposedPorts(5432)
+            .withInitScript("init.sql")
             .waitingFor(new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"));
 
     @Container
@@ -75,7 +74,7 @@ public class QueryPlanAdapterTest {
         registry.add("spring.datasource.password", database::getPassword);
         registry.add("spring.datasource.driver-class-name", database::getDriverClassName);
         registry.add("spring.jpa.databasePlatform", () -> "org.hibernate.dialect.PostgreSQLDialect");
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
         registry.add("spring.jpa.properties.hibernate.format_sql", () -> "true");
         registry.add("spring.jpa.properties.hibernate.show_sql", () -> "true");
     }
@@ -109,67 +108,6 @@ public class QueryPlanAdapterTest {
         );
     }
 
-    @BeforeEach
-    public void seedData() {
-
-
-        final Resource resource1 = new Resource();
-        resource1.setId("1");
-        resource1.setABool(true);
-        resource1.setName("resource1");
-        resource1.setAString("string");
-        resource1.setANumber(1L);
-        resource1.setCreatedBy("1");
-        resource1.setOwnedBy(Set.of("1"));
-        final Nested nested1 = new Nested();
-        nested1.setId("nested1");
-        nested1.setABool(true);
-        resource1.setNested(nested1);
-
-        final Resource resource2 = new Resource();
-        resource2.setABool(false);
-        resource2.setId("2");
-        resource2.setName("resource2");
-        resource2.setAString("amIAString?");
-        resource2.setANumber(2L);
-        resource2.setCreatedBy("2");
-        resource2.setOwnedBy(Set.of("1"));
-        final Nested nested2 = new Nested();
-        nested2.setId("nested2");
-        nested2.setABool(false);
-        resource2.setNested(nested2);
-
-
-        final Resource resource3 = new Resource();
-        resource3.setABool(true);
-        resource3.setId("3");
-        resource3.setName("resource3");
-        resource3.setAString("anotherString");
-        resource3.setANumber(3L);
-        resource3.setCreatedBy("2");
-        resource3.setOwnedBy(Set.of("2"));
-        final Nested nested3 = new Nested();
-        nested3.setId("nested3");
-        nested3.setABool(true);
-        resource3.setNested(nested3);
-
-
-        resourceRepository.saveAll(
-                List.of(
-                        resource1,
-                        resource2,
-                        resource3
-                )
-        );
-
-
-    }
-
-
-    @AfterEach
-    public void cleanup() {
-        resourceRepository.deleteAll();
-    }
 
     @ParameterizedTest
     @MethodSource("testData")
@@ -186,6 +124,7 @@ public class QueryPlanAdapterTest {
             throw new RuntimeException();
         }
 
+        log.info("test case {}", testCase);
         final List<Resource> resources = resourceRepository.findAll(adapter.adapt(plan.getCondition().get()));
 
         assertEquals(testCase.expectedResultCount(), resources.size());
